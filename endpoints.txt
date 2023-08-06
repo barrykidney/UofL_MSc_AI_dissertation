@@ -1,0 +1,78 @@
+@app.route('/tracked', methods=['GET'])
+def get_all_tracked_vehicle_ids():
+    return jsonify(vehicle_service.get_all_tracked_vehicle_ids()), 200
+
+@app.route('/tracked/<id>', methods=['GET'])
+def get_tracked_vehicle_data_by_id(id):
+    return jsonify(vehicle_service.get_tracked_vehicle_by_id(id)), 200
+
+@app.route('/tracked', methods=['DELETE'])
+def delete_all_tracked_vehicles():
+    return jsonify({'deleted': vehicle_service.delete_all_tracked_vehicles()}), 204
+
+@app.route('/scenario/vin/<vin>', methods=['GET'])
+def get_all_scenarios_by_vin(vin):
+    return jsonify({'scenarios': vehicle_service.get_all_scenarios_by_vin(vin)}), 200
+
+@app.route('/scenario/vin/<vin>/count', methods=['GET'])
+def get_number_of_scenarios_by_vin(vin):
+    key = "number of scenarios for vin (" + vin + ")"
+    return jsonify({key: vehicle_service.get_number_of_scenarios_by_vin(vin)}), 200
+
+@app.route('/scenario', methods=['GET'])
+def get_all_vins():
+    return jsonify({'vins': vehicle_service.get_all_vins()}), 200
+
+@app.route('/tracked/<id>', methods=['DELETE'])
+def delete_tracked_vehicle_by_id(id):
+    return jsonify({'deleted': vehicle_service.delete_tracked_vehicle_by_id(id)}), 204
+
+@app.route('/vin/<vin>', methods=['GET'])
+def get_ego_vehicle_data_by_vin(vin):
+    return jsonify(vehicle_service.get_ego_vehicle(vin)), 200
+
+@app.route('/save', methods=['GET'])
+def save_db_to_csv():
+    vehicle_service.save_db_to_csv()
+    return jsonify({'saved': 'output_file.csv'}), 204
+
+@app.route('/save', methods=['GET'])
+def register_vehicle_vin(vin):
+    if vehicle_service.get_ego_vehicle(vin) == None:
+        vehicle_service.set_ego_vehicle(vin)
+    return jsonify({'vehicle vin registered': vin}), 204
+
+@app.route('/vin/<vin>/data', methods=['POST'])
+def post_data_by_ego_vehicle_vin(vin):
+    # print("post:", datetime.datetime.now(), ": e", len(request.json["epoch_time"]), ": v", len(request.json["vehicles"]))
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        json = request.json
+        # print(json)
+        for (epoch_time, vehicle_list) in zip(json["epoch_time"], json["vehicles"]):
+            # print("data recieved: ", end="")
+            for vehicle in vehicle_list:
+                vehicle_service.add_data_to_tracked_vehicle(vehicle, epoch_time)
+    else:
+        print('Content-Type not supported!')
+
+    return "Data added to " + vin, 202
+
+@app.route('/vin/<vin>/starttime', methods=['POST'])
+def set_start_time(vin):
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        vehicle_service.set_data_colection_start_time(request.json)
+        return jsonify({'data collection started': datetime.datetime.fromtimestamp(request.json)}), 204
+
+@app.route('/vin/<vin>/endtime', methods=['POST'])
+def set_end_time(vin):
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        vehicle_service.set_data_colection_end_time(request.json)
+        return jsonify({'data collection started': datetime.datetime.fromtimestamp(request.json)}), 204
+
+@app.route('/datadump', methods=['GET'])
+def save_data_dump_to_file():
+    vehicle_service.save_data_dump_to_file()
+    return jsonify({'saved': 'data_dump_file.csv'}), 204
