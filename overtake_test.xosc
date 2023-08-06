@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OpenSCENARIO>
+<FileHeader revMajor="0" revMinor="0" date="2023-08-02T13:37:00" description="Overtake" author="Barry O Dubhain"/>
+<ParameterDeclarations>
+    <ParameterDeclaration parameterType="double" name="relative_start_position" value="20.0" />
+</ParameterDeclarations>
+<ParameterDeclarations>
+    <ParameterDeclaration parameterType="string" name="target" value="Ego" />
+</ParameterDeclarations>
+<Entities>
+<ScenarioObject name="Ego">
+	<CatalogReference catalogName="VehicleCatalog" entryName="car1"/>
+	<BoundingBox>
+		<Center x="1.5" y="0.0" z="0.9"/>
+		<Dimension width="2.1" length="4.5" height="1.8"/>
+	</BoundingBox>
+</ScenarioObject>
+<ScenarioObject name="A1">
+	<CatalogReference catalogName="VehicleCatalog" entryName="car2"/>
+	<BoundingBox>
+		<Dimension width="2.1" length="4.5" height="1.8"/>
+	</BoundingBox>
+</ScenarioObject>
+</Entities>
+<Storyboard>
+    <Init>
+        <Actions>
+            <Private object="Ego">
+                <Action>
+                    <DistanceCondition>
+						<Position>
+							<RelativeObjectPosition>
+								<Target>
+									<Relative object="$A1"/>
+										<Lateral rule="greaterThan" distance="2.1">
+										<Lateral rule="greaterThan" distance="-2.1">
+										<Longitudinal rule="greaterThan" distance="5.0">
+									</Relative>
+								</Target>
+							</RelativeObjectPosition>
+						</Position>
+                    </DistanceCondition>
+                </Action>
+            </Private>
+        </Actions>
+    </Init>
+	<Story name="MyStory">
+		<Act name="Act1">
+			<ManeuverGroup maximumExecutionCount="1" name="Sequence1">
+				<Maneuver name="Maneuver1">
+					<Event name="Event1" priority="override">
+						<Action name="Action1">
+							<DistanceCondition>
+								<Position>
+									<RelativeObjectPosition>
+										<Target>
+											<Relative object="$A1"/>
+												<Lateral rule="greaterThan" distance="2.1">
+												<Lateral rule="greaterThan" distance="-2.1">
+												<Longitudinal rule="greaterThan" distance="-5.0">
+											</Relative>
+										</Target>
+									</RelativeObjectPosition>
+								</Position>
+							</DistanceCondition>
+						</Action>
+					</Event>
+				</Maneuver>
+			</ManeuverGroup>
+		</Act>
+	</Story>
+</Storyboard>
+</OpenSCENARIO>
