@@ -27,28 +27,37 @@
 			<Act name="Act1">
 				<ManeuverGroup maximumExecutionCount="1" name="Sequence1">
 					<Maneuver name="Maneuver1">
-						<Event name="Event1">
+						<Event name="StartOvertake">
 							<StartTrigger>
 								<ConditionGroup>
-									<Condition name="OvertakeStartCondition1" delay="0" conditionEdge="rising">
+									<Condition name="OvertakeBegunCondition1" delay="0" conditionEdge="rising">
 										<ByEntityCondition>
 											<EntityCondition>
-												<RelativeDistanceCondition value="2.1" entityRef="Vehicle1" rule="greaterThan" relativeDistanceType="lateral" freespace="false"></RelativeDistanceCondition>
+												<RelativeDistanceCondition value="1.0" entityRef="Vehicle1" rule="greaterThan" relativeDistanceType="lateral" freespace="false"></RelativeDistanceCondition>
 												<RelativeDistanceCondition value="5.0" entityRef="Vehicle1" rule="greaterThan" relativeDistanceType="longitudinal" freespace="false"></RelativeDistanceCondition>
 											</EntityCondition>
 										</ByEntityCondition>
 									</Condition>
 								</ConditionGroup>
 								<ConditionGroup>
-									<Condition name="OvertakeStartCondition2" delay="0" conditionEdge="rising">
+									<Condition name="OvertakeBegunCondition2" delay="0" conditionEdge="rising">
 										<ByEntityCondition>
 											<EntityCondition>		
-												<RelativeDistanceCondition value="-2.1" entityRef="Vehicle1" rule="lessThan" relativeDistanceType="lateral" freespace="false"></RelativeDistanceCondition>
+												<RelativeDistanceCondition value="-1.0" entityRef="Vehicle1" rule="lessThan" relativeDistanceType="lateral" freespace="false"></RelativeDistanceCondition>
 												<RelativeDistanceCondition value="5.0" entityRef="Vehicle1" rule="greaterThan" relativeDistanceType="longitudinal" freespace="false"></RelativeDistanceCondition>
 											</EntityCondition>
 										</ByEntityCondition>
 									</Condition>
 								</ConditionGroup>
+							</StartTrigger>
+						</Event>
+						<Event name="CompleteOvertake">
+							<StartTrigger>
+									<Condition name="OvertakeCompleteCondition1" delay="0" conditionEdge="rising">
+										<CustomCondition>
+											<MachineLearningPredict model='overtakes_xgb_acc100.pickle' value="1" rule="equalTo">
+										</CustomCondition>
+									</Condition>
 							</StartTrigger>
 						</Event>
 					</Maneuver>
